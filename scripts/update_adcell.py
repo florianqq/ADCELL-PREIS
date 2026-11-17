@@ -96,7 +96,7 @@ def eur(amount):
     return str(value.quantize(decimal.Decimal("0.01"))).replace(".", ",")
 
 
-def update(csv_path, variants, minimum_match=0.90):
+def update(csv_path, variants, minimum_match=0.75):
     original = csv_path.read_bytes()
     decoded = original.decode("utf-8-sig")
     reader = csv.DictReader(io.StringIO(decoded, newline=""), delimiter=";")
