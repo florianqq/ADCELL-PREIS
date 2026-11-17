@@ -30,7 +30,20 @@ def http_json(url, payload, headers=None):
         with urllib.request.urlopen(request, timeout=45) as response:
             return json.load(response)
     except urllib.error.HTTPError as error:
-        raise RuntimeError(f"HTTP {error.code} from Shopify") from error
+        # OAuth error codes are useful for diagnosis, but never print credentials,
+        # request headers, access tokens or an unfiltered response body.
+        stage = "Shopify-Anmeldung" if url.endswith("/admin/oauth/access_token") else "Shopify-Produktabfrage"
+        detail = ""
+        if stage == "Shopify-Anmeldung":
+            try:
+                response = json.loads(error.read(4096).decode("utf-8"))
+                known = {"invalid_client", "invalid_grant", "unauthorized_client", "unsupported_grant_type", "invalid_request"}
+                code = response.get("error", "")
+                if isinstance(code, str) and code in known:
+                    detail = f" ({code})"
+            except (ValueError, UnicodeError):
+                pass
+        raise RuntimeError(f"HTTP {error.code} bei {stage}{detail}") from error
 
 
 def fetch_variants():
