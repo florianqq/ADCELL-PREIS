@@ -14,7 +14,7 @@ import json
 from collections import defaultdict
 
 SHOP = "11vgxi-hm.myshopify.com"
-CSV_FILE = pathlib.Path("508524-0 (4).csv")
+CSV_FILE = pathlib.Path("508524-0.csv")
 QUERY = """query($cursor: String) {
   productVariants(first: 250, after: $cursor) {
     nodes { id sku barcode price compareAtPrice }
